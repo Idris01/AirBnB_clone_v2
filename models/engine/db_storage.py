@@ -120,4 +120,5 @@ class DBStorage:
     def close(self):
         """Close the database
         """
-        self.__session.remove()
+        if self.__session is not None:
+            self.__session.remove()
