@@ -59,22 +59,27 @@ class DBStorage:
         """
         all_objects = {}
 
-        if cls is not None and cls in cls_map:
-            all_cls = self.__session.query(cls_map[cls]).all()
+        cls_name = cls.__name__ if cls is not None else cls
+
+        if cls is not None and cls_name in cls_map:
+            all_cls = self.__session.query(cls_map[cls_name]).all()
             for item in all_cls:
                 item = item.to_dict()
                 item.pop('__class__')
                 item_id = item.get("id")
-                all_objects[f"{cls}.{item_id}"] = item
+                all_objects[f"{cls_name}.{item_id}"] = item
 
         elif cls is None:
             for name, obj in cls_map.items():
-                all_cls = self.__session.query(obj)
-                for item in all_cls:
-                    item = item.to_dict()
-                    item.pop('__class__')
-                    item_id = item.get("id")
-                    all_objects[f"{cls}.{item_id}"] = item
+                try:
+                    all_cls = self.__session.query(obj)
+                    for item in all_cls:
+                        item = item.to_dict()
+                        cls_name = item.pop('__class__')
+                        item_id = item.get("id")
+                        all_objects[f"{cls_name}.{item_id}"] = item
+                except Exception:
+                    pass
 
         to_return = []
 
@@ -115,7 +120,7 @@ class DBStorage:
         factory_session = sessionmaker(
                 bind=self.__engine,
                 expire_on_commit=False)
-        self.__session = scoped_session(factory_session)()
+        self.__session = scoped_session(factory_session)
 
     def close(self):
         """Close the database
