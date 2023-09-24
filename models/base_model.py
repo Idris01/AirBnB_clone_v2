@@ -45,6 +45,20 @@ class BaseModel:
             if 'updated_at' not in self.__dict__:
                 self.updated_at = datetime.now()
 
+    @property
+    def ordering(self):
+        return dict(
+                name=1, id=2, state_id=3, default=4,
+                updated_at=5, created_at=6)
+
+    def sort_key(self, x):
+        """Key to format string print representation
+        """
+        ordering = self.ordering
+        return (
+                ordering[x] if x in ordering else
+                ordering['default'])
+
     def __str__(self):
         """Returns a string representation of the instance"""
         cls = (str(type(self)).split('.')[-1]).split('\'')[0]
@@ -52,12 +66,22 @@ class BaseModel:
             if '_sa_instance_state' in self.__dict__:
                 del self.__dict__[i]
                 break
-        return '[{}] ({}) {}'.format(cls, self.id, self.__dict__)
+        rep_dict = self.__dict__
+        sort_key = self.sort_key
+        new_dict = {key: rep_dict[key] for key in sorted(
+            list(rep_dict.keys()), key=sort_key)}
+
+        return '[{}] ({}) {}'.format(cls, self.id, new_dict)
 
     def __repr__(self):
         """Returns a string representation of the instance"""
-        cls = self.__class__.__name__
-        return '[{}] ({}) {}'.format(cls, self.id, self.__dict__)
+        cls = self.__class__.__name__a
+        rep_dict = self.__dict__
+        sort_key = self.sort_key
+        new_dict = {key: rep_dict[key] for key in sorted(
+            list(rep_dict.keys()), key=sort_key)}
+
+        return '[{}] ({}) {}'.format(cls, self.id, new_dict)
 
     def save(self):
         """Updates updated_at with current time when instance is changed"""
@@ -72,8 +96,8 @@ class BaseModel:
         dictionary.update(self.__dict__)
         dictionary.update({'__class__':
                           (str(type(self)).split('.')[-1]).split('\'')[0]})
-        dictionary['created_at'] = self.created_at.isoformat()
         dictionary['updated_at'] = self.updated_at.isoformat()
+        dictionary['created_at'] = self.created_at.isoformat()
 
         if '_sa_instance_state' in dictionary:
             del dictionary['_sa_instance_state']
