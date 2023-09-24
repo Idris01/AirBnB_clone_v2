@@ -25,6 +25,8 @@ def states_list():
     all_states = storage.all(State)
     data = [re.search(
         pattern, state).groupdict() for state in all_states]
+
+    data.sort(key=lambda x: x['name'])
     return render_template("7-states_list.html", states=data)
 
 
