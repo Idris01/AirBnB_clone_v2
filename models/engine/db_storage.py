@@ -59,14 +59,17 @@ class DBStorage:
         """
         all_objects = {}
 
-        cls_name = cls.__name__ if cls is not None else cls
+        cls_name = (
+                cls if isinstance(cls, str)
+                else (cls.__name__ if cls is not None else cls)
+                )
 
         if cls is not None and cls_name in cls_map:
             all_cls = self.__session.query(cls_map[cls_name]).all()
             for item in all_cls:
-                item = item.to_dict()
-                item.pop('__class__')
-                item_id = item.get("id")
+                # item = item.to_dict()
+                # item.pop('__class__')
+                item_id = item.id
                 all_objects[f"{cls_name}.{item_id}"] = item
 
         elif cls is None:
@@ -74,21 +77,14 @@ class DBStorage:
                 try:
                     all_cls = self.__session.query(obj)
                     for item in all_cls:
-                        item = item.to_dict()
-                        cls_name = item.pop('__class__')
-                        item_id = item.get("id")
+                        # item = item.to_dict()
+                        # cls_name = item.pop('__class__')
+                        item_id = item.id
                         all_objects[f"{cls_name}.{item_id}"] = item
                 except Exception:
                     pass
 
-        to_return = []
-
-        for key, value in all_objects.items():
-            this_class, this_id = key.split(".")
-            value["updated_at"] = datetime.fromisoformat(value["updated_at"])
-            value["created_at"] = datetime.fromisoformat(value["created_at"])
-            to_return.append(f"[{this_class}] ({this_id}) {value}")
-        return to_return
+        return all_objects
 
     def new(self, cls):
         """Add new object to the current database
