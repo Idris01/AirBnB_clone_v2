@@ -21,10 +21,11 @@ def refresh_context(exception):
 def states_list():
     """Return List of all states
     """
-    pattern = r"'name':\s'(?P<name>\w+)'.*?id':\s'(?P<id>[a-z-0-9]+)'"
     all_states = storage.all(State)
-    data = [re.search(
-        pattern, state).groupdict() for state in all_states]
+    data = [dict(
+        name=state.name,
+        id=state.id
+        ) for state in all_states.values()]
 
     data.sort(key=lambda x: x['name'])
     return render_template("7-states_list.html", states=data)
