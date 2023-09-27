@@ -24,7 +24,7 @@ def states():
         ) for state in all_states.values()]
 
     data.sort(key=lambda x: x['name'])
-    return render_template("9-states.html", states=data)
+    return render_template("9-states.html", states=data, is_states=True)
 
 
 @app.route('/states/<id>', strict_slashes=False)
