@@ -75,7 +75,7 @@ class BaseModel:
 
     def __repr__(self):
         """Returns a string representation of the instance"""
-        cls = self.__class__.__name__a
+        cls = self.__class__.__name__
         rep_dict = self.__dict__
         sort_key = self.sort_key
         new_dict = {key: rep_dict[key] for key in sorted(
