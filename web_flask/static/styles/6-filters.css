@@ -40,8 +40,8 @@
 
 	border: 1px solid #DDDDDD;
 	border-radius: 4px;
-	overflow-y:scroll;
 	max-height: 300px;
+	overflow-y:scroll;
 }
 
 .locations:hover .popover {
