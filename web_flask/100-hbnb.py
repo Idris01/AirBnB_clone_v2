@@ -39,8 +39,8 @@ def hbnb():
     amenities.sort()
 
     places = list(storage.all(Place).values())
-    places.sort(key = lambda x: x.name)
-    
+    places.sort(key=lambda x: x.name)
+
     return render_template(
             "100-hbnb.html",
             states=all_states,
